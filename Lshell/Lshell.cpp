@@ -1,5 +1,3 @@
-﻿// Lshell.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
-//
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -8,14 +6,30 @@
 #include <direct.h>
 #include <stdlib.h>
 #include <processthreadsapi.h>
-
-using namespace std;
-
 #include <cprintf_m.h>
 #include <processid_m.h>
-//使用readline库 遵循GPL 3.0开源协议
+using namespace std;
+char inputstr[256] = { 0 };
+char bufferstr[256] = { 0 };
+char* bufferstr_ = NULL;
 
-int main(){
+static int inputstrcmp(const char* command, char* _args) {
+	bufferstr[255] = { 0 };
+	for (int fis = 0; fis != sizeof(command); fis++) {
+		bufferstr[fis] = inputstr[fis];
+		if (strcmp(bufferstr, command) == 0) {
+			bufferstr[255] = { 0 };
+			for (int fiss = fis; fiss != sizeof(inputstr); fiss++)
+			{
+				_args[fiss - fis] = inputstr[fiss+2];
+			}
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+int main() {
 
 	char PathName[MAX_PATH] = { 0 };
 	getcwd(PathName, sizeof(PathName));
@@ -36,9 +50,9 @@ int main(){
 	printf("-----Lshell,垃圾的不能再垃圾的工具，仅供测试-----\n");
 	printf("Lshell - 垃圾玩意[版本 Beta 1.0]\n(c) L Corporation。不保留所有权利。\n");
 
-	while(1){
+	while (1) {
 		colorful_printf(RED, "[Lshell]");
-		printf("%S@%S:~%s",UserName,PCName,PathName);
+		printf("%S@%S:~%s", UserName, PCName, PathName);
 		if (IsRunningAsAdmin(GetCurrentProcessId()) == true) {
 			printf("#");
 		}
@@ -46,17 +60,11 @@ int main(){
 		{
 			printf("$");
 		}
-		Sleep(1000000);
+		gets_s(inputstr, sizeof inputstr);
+		char returnstr[256] = { 0 };
+		int text = NULL;
+		text = inputstrcmp("help", returnstr);
+		cout << "text:" << text << "returnstr=" << returnstr;
 
 	}
 }
-// 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
-// 调试程序: F5 或调试 >“开始调试”菜单
-
-// 入门使用技巧: 
-//   1. 使用解决方案资源管理器窗口添加/管理文件
-//   2. 使用团队资源管理器窗口连接到源代码管理
-//   3. 使用输出窗口查看生成输出和其他消息
-//   4. 使用错误列表窗口查看错误
-//   5. 转到“项目”>“添加新项”以创建新的代码文件，或转到“项目”>“添加现有项”以将现有代码文件添加到项目
-//   6. 将来，若要再次打开此项目，请转到“文件”>“打开”>“项目”并选择 .sln 文件
